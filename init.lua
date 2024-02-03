@@ -2,7 +2,7 @@
 ---
 --- Control applications from the macOS Menu Bar 
 ---
---- Download: [https://github.com/adammillerio/MenuBarApps.spoon/archive/refs/heads/main.zip](https://github.com/adammillerio/MenuBarApps.spoon/archive/refs/heads/main.zip)
+--- Download: https://github.com/adammillerio/Spoons/raw/main/Spoons/MenuBarApps.spoon.zip
 ---
 --- Example Usage (Using [SpoonInstall](https://zzamboni.org/post/using-spoons-in-hammerspoon/)):
 --- Create a "P" menu bar item that opens and moves Plexamp and create a "D" menu
@@ -84,10 +84,11 @@ end
 -- Handler for a menu bar click.
 -- Inputs are the hs.menubar clicked and the configured appName and config.
 function MenuBarApps:_menuBarClicked(menuBar, appName, config)
+    print(appName)
     -- Get app hs.window
     appWindow = WindowCache:findWindowByApp(appName)
     if not appWindow then
-        self.logger:ef("%s is not open or hidden", appName)
+        self.logger.ef("%s is not open or hidden", appName)
         return
     end
 
@@ -121,7 +122,7 @@ function MenuBarApps:_menuBarClicked(menuBar, appName, config)
         elseif config.action == actions.maximize then
             if appWindow:isMaximizable() then appWindow:maximize() end
         else
-            self.logger:ef("Unknown action %s", config.action)
+            self.logger.ef("Unknown action %s", config.action)
         end
 
         app:activate()
