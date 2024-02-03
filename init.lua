@@ -67,6 +67,11 @@ MenuBarApps.apps = nil
 --- level for the messages coming from the Spoon.
 MenuBarApps.logger = nil
 
+--- MenuBarApps.logLevel
+--- Variable
+--- MenuBarApps specific log level override, see hs.logger.setLogLevel for options.
+MenuBarApps.logLevel = nil
+
 --- MenuBarApps.menuBars
 --- Variable
 --- Table containing references to all of the created menu bars.
@@ -75,11 +80,7 @@ MenuBarApps.menuBars = nil
 --- MenuBarApps:init()
 --- Method
 --- Spoon initializer method for MenuBarApps.
-function MenuBarApps:init()
-    self.logger = hs.logger.new('MenuBarApps')
-
-    self.menuBars = {}
-end
+function MenuBarApps:init() self.menuBars = {} end
 
 -- Handler for a menu bar click.
 -- Inputs are the hs.menubar clicked and the configured appName and config.
@@ -133,6 +134,9 @@ end
 -- Utility method for creating a new menu bar and adding it to the table.
 -- Inputs are the configured appName and it's config.
 function MenuBarApps:_createMenuBar(appName, config)
+    self.logger.vf("Creating MenuBar App for \"%s\" with config: %s", appName,
+                   hs.inspect(config))
+
     menuBar = hs.menubar.new()
 
     menuBar:setClickCallback(function()
@@ -147,6 +151,13 @@ end
 --- Method
 --- Spoon start method for MenuBarApps. Creates all configured menu bars.
 function MenuBarApps:start()
+    -- Start logger, this has to be done in start because it relies on config.
+    self.logger = hs.logger.new("MenuBarApps")
+
+    if self.logLevel ~= nil then self.logger.setLogLevel(self.logLevel) end
+
+    self.logger.v("Starting MenuBarApps")
+
     for appName, config in pairs(self.apps) do
         self:_createMenuBar(appName, config)
     end
@@ -156,6 +167,8 @@ end
 --- Method
 --- Spoon stop method for MenuBarApps. Deletes all configured menu bars.
 function MenuBarApps:stop()
+    self.logger.v("Stopping MenuBarApps")
+
     for i, menuBar in ipairs(self.menuBars) do menuBar:delete() end
 end
 
