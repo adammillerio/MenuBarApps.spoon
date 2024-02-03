@@ -3,29 +3,91 @@
 --- Control applications from the macOS Menu Bar 
 ---
 --- Download: [https://github.com/adammillerio/MenuBarApps.spoon/archive/refs/heads/main.zip](https://github.com/adammillerio/MenuBarApps.spoon/archive/refs/heads/main.zip)
-local obj = {}
-obj.__index = obj
+---
+--- Example Usage (Using [SpoonInstall](https://zzamboni.org/post/using-spoons-in-hammerspoon/)):
+--- Create a "P" menu bar item that opens and moves Plexamp and create a "D" menu
+--- bar item that opens and maximizes Discord.
+--- spoon.SpoonInstall:andUse(
+---   "MenuBarApps",
+---   {
+---     config = {
+---       apps = {
+---         ["Plexamp"] = {
+---           title = "P",
+---           action = "move"
+---         },
+---         ["Discord"] = {
+---           title = "D",
+---           action = "maximize"
+---         }
+---       }
+---     },
+---     start = true
+---   }
+--- )
+local MenuBarApps = {}
 
+MenuBarApps.__index = MenuBarApps
+
+-- Metadata
+MenuBarApps.name = "MenuBarApps"
+MenuBarApps.version = "0.1"
+MenuBarApps.author = "Adam Miller <adam@adammiller.io>"
+MenuBarApps.homepage = "https://github.com/adammillerio/MenuBarApps.spoon"
+MenuBarApps.license = "MIT - https://opensource.org/licenses/MIT"
+
+-- Dependency Spoons
+-- WindowCache is used for quick retrieval of windows when showing/hiding.
 WindowCache = spoon.WindowCache
 
--- MenuBarApps.logger
--- Variable
---- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.logger = nil
+--- MenuBarApps.action.move
+--- Constant
+--- Move the window to appear under the menu bar item as if it were a menu.
 
-obj.menuBars = nil
+--- MenuBarApps.action.maximize
+--- Constant
+--- Maximize the application on the current space if it is not maximized already.
 
-function obj:init()
-    obj.logger = hs.logger.new('MenuBarApps')
+local actions = {move = "move", maximize = "maximize"}
 
-    obj.menuBars = {}
+for k in pairs(actions) do MenuBarApps[k] = k end -- expose actions
+
+--- MenuBarApps.config
+--- Variable
+--- Table containing each application's name and it's desired configuration. The
+--- key of each entry is the name of the App as it appears in the title bar, and
+--- the value is a configuration table with the following entries:
+---     * title - String with title text to display in the menu bar icon itself
+---     * action - String with action to take on window when showing. See constants.
+MenuBarApps.apps = nil
+
+--- MenuBarApps.logger
+--- Variable
+--- Logger object used within the Spoon. Can be accessed to set the default log 
+--- level for the messages coming from the Spoon.
+MenuBarApps.logger = nil
+
+--- MenuBarApps.menuBars
+--- Variable
+--- Table containing references to all of the created menu bars.
+MenuBarApps.menuBars = nil
+
+--- MenuBarApps:init()
+--- Method
+--- Spoon initializer method for MenuBarApps.
+function MenuBarApps:init()
+    self.logger = hs.logger.new('MenuBarApps')
+
+    self.menuBars = {}
 end
 
-local function menuBarClicked(menuBar, appName, config)
+-- Handler for a menu bar click.
+-- Inputs are the hs.menubar clicked and the configured appName and config.
+function MenuBarApps:_menuBarClicked(menuBar, appName, config)
     -- Get app hs.window
     appWindow = WindowCache:findWindowByApp(appName)
     if not appWindow then
-        obj.logger.ef("%s is not open or hidden", appName)
+        self.logger:ef("%s is not open or hidden", appName)
         return
     end
 
@@ -34,11 +96,12 @@ local function menuBarClicked(menuBar, appName, config)
 
     -- If this window is not the frontmost window, then we need to act on it
     if hs.window.frontmostWindow():id() ~= appWindow:id() then
+        -- Move the window to the currently focused space.
         hs.spaces.moveWindowToSpace(appWindow, hs.spaces.focusedSpace())
 
         -- move mode - This moves the application under the menu bar item so that it
         -- appears like a menu
-        if config.action == "move" then
+        if config.action == actions.move then
             -- Get rect representing the frame of the app window
             appWindowFrame = appWindow:frame()
             -- Get rect representing the frame of the menubar item
@@ -55,10 +118,10 @@ local function menuBarClicked(menuBar, appName, config)
             -- Move the window to the desired location
             appWindow:move(appWindowFrame)
             -- maximize mode - This just maxmizes the app if it isn't already
-        elseif config.action == "maximize" then
+        elseif config.action == actions.maximize then
             if appWindow:isMaximizable() then appWindow:maximize() end
         else
-            obj.logger.ef("Unknown action %s", config.action)
+            self.logger:ef("Unknown action %s", config.action)
         end
 
         app:activate()
@@ -67,23 +130,33 @@ local function menuBarClicked(menuBar, appName, config)
     end
 end
 
-local function createMenuBar(appName, config)
+-- Utility method for creating a new menu bar and adding it to the table.
+-- Inputs are the configured appName and it's config.
+function MenuBarApps:_createMenuBar(appName, config)
     menuBar = hs.menubar.new()
 
     menuBar:setClickCallback(function()
-        menuBarClicked(menuBar, appName, config)
+        self:_menuBarClicked(menuBar, appName, config)
     end)
     menuBar:setTitle(config.title)
 
-    table.insert(obj.menuBars, menuBar)
+    table.insert(self.menuBars, menuBar)
 end
 
-function obj:start()
-    for appName, config in pairs(obj.apps) do createMenuBar(appName, config) end
+--- MenuBarApps:start()
+--- Method
+--- Spoon start method for MenuBarApps. Creates all configured menu bars.
+function MenuBarApps:start()
+    for appName, config in pairs(self.apps) do
+        self:_createMenuBar(appName, config)
+    end
 end
 
-function obj:stop()
-    for i, menuBar in ipairs(obj.menuBars) do menuBar:delete() end
+--- MenuBarApps:stop()
+--- Method
+--- Spoon stop method for MenuBarApps. Deletes all configured menu bars.
+function MenuBarApps:stop()
+    for i, menuBar in ipairs(self.menuBars) do menuBar:delete() end
 end
 
-return obj
+return MenuBarApps
