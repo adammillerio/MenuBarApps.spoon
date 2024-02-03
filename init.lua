@@ -52,7 +52,7 @@ local actions = {move = "move", maximize = "maximize"}
 
 for k in pairs(actions) do MenuBarApps[k] = k end -- expose actions
 
---- MenuBarApps.config
+--- MenuBarApps.apps
 --- Variable
 --- Table containing each application's name and it's desired configuration. The
 --- key of each entry is the name of the App as it appears in the title bar, and
@@ -84,7 +84,6 @@ end
 -- Handler for a menu bar click.
 -- Inputs are the hs.menubar clicked and the configured appName and config.
 function MenuBarApps:_menuBarClicked(menuBar, appName, config)
-    print(appName)
     -- Get app hs.window
     appWindow = WindowCache:findWindowByApp(appName)
     if not appWindow then
