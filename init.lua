@@ -80,6 +80,12 @@ MenuBarApps.menuBars = nil
 --- MenuBarApps:init()
 --- Method
 --- Spoon initializer method for MenuBarApps.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * None
 function MenuBarApps:init() self.menuBars = {} end
 
 -- Handler for a menu bar click.
@@ -150,6 +156,12 @@ end
 --- MenuBarApps:start()
 --- Method
 --- Spoon start method for MenuBarApps. Creates all configured menu bars.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * None
 function MenuBarApps:start()
     -- Start logger, this has to be done in start because it relies on config.
     self.logger = hs.logger.new("MenuBarApps")
@@ -166,6 +178,12 @@ end
 --- MenuBarApps:stop()
 --- Method
 --- Spoon stop method for MenuBarApps. Deletes all configured menu bars.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * None
 function MenuBarApps:stop()
     self.logger.v("Stopping MenuBarApps")
 
