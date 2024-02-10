@@ -3,35 +3,15 @@
 --- Control applications from the macOS Menu Bar 
 ---
 --- Download: https://github.com/adammillerio/Spoons/raw/main/Spoons/MenuBarApps.spoon.zip
----
---- Example Usage (Using [SpoonInstall](https://zzamboni.org/post/using-spoons-in-hammerspoon/)):
---- Create a "P" menu bar item that opens and moves Plexamp and create a "D" menu
---- bar item that opens and maximizes Discord.
---- spoon.SpoonInstall:andUse(
----   "MenuBarApps",
----   {
----     config = {
----       apps = {
----         ["Plexamp"] = {
----           title = "P",
----           action = "move"
----         },
----         ["Discord"] = {
----           title = "D",
----           action = "maximize"
----         }
----       }
----     },
----     start = true
----   }
---- )
+--- 
+--- README with Example Usage: [README.md](https://github.com/adammillerio/MenuBarApps.spoon/blob/main/README.md)
 local MenuBarApps = {}
 
 MenuBarApps.__index = MenuBarApps
 
 -- Metadata
 MenuBarApps.name = "MenuBarApps"
-MenuBarApps.version = "0.1"
+MenuBarApps.version = "0.0.2"
 MenuBarApps.author = "Adam Miller <adam@adammiller.io>"
 MenuBarApps.homepage = "https://github.com/adammillerio/MenuBarApps.spoon"
 MenuBarApps.license = "MIT - https://opensource.org/licenses/MIT"
@@ -88,6 +68,13 @@ MenuBarApps.menuBars = nil
 ---  * None
 function MenuBarApps:init() self.menuBars = {} end
 
+-- Utility method for having instance specific callbacks.
+-- Inputs are the callback fn and any arguments to be applied after the instance
+-- reference.
+function MenuBarApps:_instanceCallback(callback, ...)
+    return hs.fnutils.partial(callback, self, ...)
+end
+
 -- Handler for a menu bar click.
 -- Inputs are the hs.menubar clicked and the configured appName and config.
 function MenuBarApps:_menuBarClicked(menuBar, appName, config)
@@ -137,17 +124,55 @@ function MenuBarApps:_menuBarClicked(menuBar, appName, config)
     end
 end
 
+-- Generate a sub menu for a menu bar.
+-- Input is the menuConfig.
+function MenuBarApps:_createMenu(menuConfig)
+    self.logger.vf("Creating menu with config: %s", hs.inspect(menuConfig))
+    local menu = {}
+
+    for _, config in ipairs(menuConfig) do
+        self.logger.vf("Creating menuItem config: %s", hs.inspect(config))
+        local menuItem = {}
+
+        if config.action ~= "menu" then
+            self.logger
+                .vf("Setting menu item to config: %s", hs.inspect(config))
+            menuItem.fn = self:_instanceCallback(self._menuBarClicked, menuBar,
+                                                 config.app, config)
+        else
+            self.logger.vf("Creating new child menu with config: %s",
+                           hs.inspect(config.menu))
+            menuItem.menu = self:_createMenu(config.menu)
+        end
+
+        menuItem.title = config.title
+
+        self.logger.vf("Adding menu item: %s", hs.inspect(menuItem))
+        table.insert(menu, menuItem)
+    end
+
+    self.logger.vf("Generated menu: %s", hs.inspect(menu))
+    return menu
+end
+
 -- Utility method for creating a new menu bar and adding it to the table.
--- Inputs are the configured appName and it's config.
-function MenuBarApps:_createMenuBar(appName, config)
-    self.logger.vf("Creating MenuBar App for \"%s\" with config: %s", appName,
-                   hs.inspect(config))
+-- Input is the menu config.
+function MenuBarApps:_createMenuBar(config)
+    self.logger.vf("Creating MenuBar with config: %s", hs.inspect(config))
 
     menuBar = hs.menubar.new()
 
-    menuBar:setClickCallback(function()
-        self:_menuBarClicked(menuBar, appName, config)
-    end)
+    if config.action ~= "menu" then
+        self.logger.vf("(%s) Not Menu: Setting item click callback",
+                       config.title)
+        menuBar:setClickCallback(self:_instanceCallback(self._menuBarClicked,
+                                                        menuBar, config.app,
+                                                        config))
+    else
+        self.logger.vf("(%s) Menu: Generating main menu", config.title)
+        menuBar:setMenu(self:_createMenu(config.menu))
+    end
+
     menuBar:setTitle(config.title)
 
     table.insert(self.menuBars, menuBar)
@@ -170,9 +195,7 @@ function MenuBarApps:start()
 
     self.logger.v("Starting MenuBarApps")
 
-    for appName, config in pairs(self.apps) do
-        self:_createMenuBar(appName, config)
-    end
+    for _, config in ipairs(self.apps) do self:_createMenuBar(config) end
 end
 
 --- MenuBarApps:stop()

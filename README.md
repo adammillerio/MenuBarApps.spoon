@@ -7,6 +7,8 @@ As an example, this configuration creates a Menu Bar item with the letter "P" wh
 
 The application will be automatically moved to the focused space in Mission Control. It can either be clicked out of like normal or hidden by clicking the Menu Bar icon again.
 
+You can also use this to create menus and sub-menus of applications as well.
+
 # Known Issues
 
 * Currently does not handle applications that are not open or are minimzed
@@ -36,18 +38,37 @@ spoon.SpoonInstall:andUse("WindowCache", {repo = "adammillerio", start = true})
 spoon.SpoonInstall:andUse("MenuBarApps", {
     config = {
         apps = {
-            ["Plexamp"] = {title = "P", action = "move"},
-            ["Discord"] = {title = "D", action = "maximize"}
+            {title = "P", app = "Plexamp", action = "move"},
+            {title = "D", app = "Discord", action = "maximize"},
+            {
+                title = "A",
+                action = "menu",
+                menu = {
+                    {title = "KeePassXC", app = "KeePassXC", action = "move"},
+                    {title = "Reminders", app = "Reminders", action = "move"}, {
+                        title = "Misc",
+                        action = "menu",
+                        menu = {
+                            {
+                                title = "Settings",
+                                app = "Settings",
+                                action = "move"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     start = true
 })
 ```
 
-This will create two menu bar items:
+This will create three menu bar items:
 
 * Menu Bar with icon "P" which opens the "Plexamp" application and moves it to be under the Menu Bar in the current Space
 * Menu Bar with icon "D" which opens the "Discord" application and maximizes it in the current Space
+* Menu Bar with icon "A" which opens menu with "KeePassXC", "Reminders", and a "Test" sub-menu with "Settings".
 
 These can then be moved around like any other menu bar items.
 
@@ -71,8 +92,26 @@ hs.loadSpoon("MenuBarApps")
 hs.spoons.use("MenuBarApps", {
     config = {
         apps = {
-            ["Plexamp"] = {title = "P", action = "move"},
-            ["Discord"] = {title = "D", action = "maximize"}
+            {title = "P", app = "Plexamp", action = "move"},
+            {title = "D", app = "Discord", action = "maximize"},
+            {
+                title = "A",
+                action = "menu",
+                menu = {
+                    {title = "KeePassXC", app = "KeePassXC", action = "move"},
+                    {title = "Reminders", app = "Reminders", action = "move"}, {
+                        title = "Misc",
+                        action = "menu",
+                        menu = {
+                            {
+                                title = "Settings",
+                                app = "Settings",
+                                action = "move"
+                            }
+                        }
+                    }
+                }
+            }
         },
         start = true
     }
