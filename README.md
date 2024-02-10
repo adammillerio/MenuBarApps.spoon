@@ -5,13 +5,12 @@ As an example, this configuration creates a Menu Bar item with the letter "P" wh
 
 ![Screenshot](docs/images/menu.png)
 
-The application will be automatically moved to the focused space in Mission Control. It can either be clicked out of like normal or hidden by clicking the Menu Bar icon again.
+The application will be automatically moved to the focused space in Mission Control. It can either be clicked out of like normal or hidden by clicking the Menu Bar icon again. If the `spacePrecedence` option is set to `true`, then it will check for and open a Space-specific instance of the application in the currently focused Space. This is useful for things like browsers, terminals, and code editors.
 
 You can also use this to create menus and sub-menus of applications as well.
 
 # Known Issues
 
-* Currently does not handle applications that are not open or are minimzed
 * In "move" mode it does not end up exactly under the Menu Bar item, particularly when there are several defined
 
 # Installation
@@ -39,9 +38,17 @@ spoon.SpoonInstall:andUse("MenuBarApps", {
     config = {
         apps = {
             {title = "P", app = "Plexamp", action = "move"},
-            {title = "D", app = "Discord", action = "maximize"},
-            {
+            {title = "D", app = "Discord", action = "maximize"}, {
                 title = "A",
+                app = "Arc",
+                action = "maximize",
+                spacePrecedence = true,
+                newWindowConfig = {
+                    menuSection = "File",
+                    menuItem = "New Window"
+                }
+            }, {
+                title = "M",
                 action = "menu",
                 menu = {
                     {title = "KeePassXC", app = "KeePassXC", action = "move"},
@@ -68,7 +75,8 @@ This will create three menu bar items:
 
 * Menu Bar with icon "P" which opens the "Plexamp" application and moves it to be under the Menu Bar in the current Space
 * Menu Bar with icon "D" which opens the "Discord" application and maximizes it in the current Space
-* Menu Bar with icon "A" which opens menu with "KeePassXC", "Reminders", and a "Test" sub-menu with "Settings".
+* Menu Bar with icon "A" which opens a Space-specific instance of the "Arc" application in the current space, using the provided newWindowConfig to identify an application menu selection
+* Menu Bar with icon "M" which opens menu with "KeePassXC", "Reminders", and a "Misc" sub-menu with "Settings".
 
 These can then be moved around like any other menu bar items.
 
@@ -93,9 +101,17 @@ hs.spoons.use("MenuBarApps", {
     config = {
         apps = {
             {title = "P", app = "Plexamp", action = "move"},
-            {title = "D", app = "Discord", action = "maximize"},
-            {
+            {title = "D", app = "Discord", action = "maximize"}, {
                 title = "A",
+                app = "Arc",
+                action = "maximize",
+                spacePrecedence = true,
+                newWindowConfig = {
+                    menuSection = "File",
+                    menuItem = "New Window"
+                }
+            }, {
+                title = "M",
                 action = "menu",
                 menu = {
                     {title = "KeePassXC", app = "KeePassXC", action = "move"},
