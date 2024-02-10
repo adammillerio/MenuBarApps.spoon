@@ -111,7 +111,8 @@ function MenuBarApps:_actionMenuItem(menuBar, config, app, appWindow)
         self.logger.ef("Unknown action %s", config.action)
     end
 
-    app:activate()
+    -- Focus the window.
+    appWindow:focus()
 end
 
 -- Retrieve and move a window from an app to the currently focused space.
@@ -121,7 +122,15 @@ end
 -- hs.application to action on.
 function MenuBarApps:_getAndMoveOpenedAppWindow(menuBar, config,
                                                 currentlyFocusedSpace, app)
-    appWindow = WindowCache:findWindowByApp(config.app)
+    if config.spacePrecedence then
+        -- Get the latest window specifically for this space.
+        spaceID = currentlyFocusedSpace
+    else
+        -- Otherwise just get the latest in general.
+        spaceID = nil
+    end
+
+    appWindow = WindowCache:findWindowByApp(config.app, spaceID)
     if not appWindow then
         self.logger.ef("No window for app %s open, cannot continue", config.app)
         return
@@ -144,6 +153,51 @@ function MenuBarApps:_moveOpenedAppWindow(menuBar, config,
     self:_actionMenuItem(menuBar, config, app, appWindow)
 end
 
+-- Open a new window for the running app in the current Space.
+-- Invoked from the menu bar handler for applications which have space precedence
+-- enabled, this will look at the newWindowConfig for the given app to determine
+-- the menu item to select which will open a new window in the current Space. It
+-- will then wait for a window from this app to appear in the Space and then action
+-- on it.
+-- Inputs are the hs.menubar, app config, currently focused space ID, and the
+-- hs.application to action on.
+function MenuBarApps:_openNewWindowInSpace(menuBar, config,
+                                           currentlyFocusedSpace, app)
+    newWindowConfig = config.newWindowConfig
+    if not newWindowConfig then
+        self.logger.ef(
+            "No newWindowConfig defined for app %s, cannot open new window in space",
+            config.app)
+        return
+    end
+
+    menuSection = newWindowConfig.menuSection
+    menuItem = newWindowConfig.menuItem
+    if menuSection and menuItem then
+        self.logger.vf("Selecting menu item '%s' in section '%s' in app '%s'",
+                       menuItem, menuSection, config.app)
+        selected = app:selectMenuItem({menuSection, menuItem})
+
+        if not selected then
+            self.logger.wf(
+                "Could not find menu item '%s' in section '%s' in app '%s'",
+                self.menuItem, self.menuSection, config.app)
+
+            return
+        end
+    end
+
+    -- Wait for a window from this app to appear in the Space and continue the
+    -- action flow.
+    self.menuBarOpenTimer = WindowCache:waitForWindowByApp(appName,
+                                                           self:_instanceCallback(
+                                                               self._getAndMoveOpenedAppWindow,
+                                                               menuBar, config,
+                                                               currentlyFocusedSpace,
+                                                               app), nil,
+                                                           currentlyFocusedSpace)
+end
+
 -- Handler for a menu bar click.
 -- Inputs are the hs.menubar clicked and the configured appName and config.
 function MenuBarApps:_menuBarClicked(menuBar, appName, config)
@@ -154,7 +208,27 @@ function MenuBarApps:_menuBarClicked(menuBar, appName, config)
 
     -- Get app hs.window
     self.logger.vf("Finding open window for app %s", appName)
-    appWindow = WindowCache:findWindowByApp(appName)
+
+    spaceWindowNeeded = false
+    if config.spacePrecedence then
+        -- Search the Space-specific window cache for a window from this app.
+        appWindow = WindowCache:findWindowByApp(appName, currentlyFocusedSpace)
+
+        if not appWindow then
+            -- Search the main cache to find any instance of a window from this
+            -- app, so we can use it to open another one.
+            appWindow = WindowCache:findWindowByApp(appName)
+            if appWindow then
+                -- We found an existing window, and need to make a new one for
+                -- this space.
+                spaceWindowNeeded = true
+            end
+        end
+    else
+        -- Otherwise, just search the main cache for whichever window is latest.
+        appWindow = WindowCache:findWindowByApp(appName)
+    end
+
     -- If we could not find a cached window for the app of this menu bar.
     if not appWindow then
         if config.disableOpen then
@@ -185,7 +259,8 @@ function MenuBarApps:_menuBarClicked(menuBar, appName, config)
 
     if appOpened then
         -- If this is a "fresh" open, we instead tell WindowCache to only continue
-        -- the action flow once it can find a window from the app in it.
+        -- the action flow once it can find a window from the app in it. This is
+        -- implicitly Space local, so it does not need to check precedence.
         self.menuBarOpenTimer = WindowCache:waitForWindowByApp(appName,
                                                                self:_instanceCallback(
                                                                    self._getAndMoveOpenedAppWindow,
@@ -193,6 +268,10 @@ function MenuBarApps:_menuBarClicked(menuBar, appName, config)
                                                                    config,
                                                                    currentlyFocusedSpace,
                                                                    app))
+    elseif config.spacePrecedence and spaceWindowNeeded then
+        -- If the app is running but has no window in this Space, and spacePrecedence
+        -- is enabled, then open a new window for this app in this Space.
+        self:_openNewWindowInSpace(menuBar, config, currentlyFocusedSpace, app)
     elseif hs.window.frontmostWindow():id() ~= appWindow:id() then
         -- If this window already exists but is not the frontmost window, then we
         -- need to act on it, and move the window to the currently focused space.
