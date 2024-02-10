@@ -57,6 +57,12 @@ MenuBarApps.logLevel = nil
 --- Table containing references to all of the created menu bars.
 MenuBarApps.menuBars = nil
 
+--- MenuBarApps.menuBarOpenTimer
+--- Variable
+--- hs.timer for moving an app's first window after being opened via MenuBarApps.
+--- This behavior can be disabled by setting disableOpen=true on the app config.
+MenuBarApps.menuBarOpenTimer = nil
+
 --- MenuBarApps:init()
 --- Method
 --- Spoon initializer method for MenuBarApps.
@@ -75,51 +81,125 @@ function MenuBarApps:_instanceCallback(callback, ...)
     return hs.fnutils.partial(callback, self, ...)
 end
 
--- Handler for a menu bar click.
--- Inputs are the hs.menubar clicked and the configured appName and config.
-function MenuBarApps:_menuBarClicked(menuBar, appName, config)
-    -- Get app hs.window
-    appWindow = WindowCache:findWindowByApp(appName)
+-- Action a menu item's window. This performs whatever action is needed on an
+-- app's window after being migrated to the current space.
+-- Inputs are the hs.menubar, app config, the hs.application to action on, and
+-- the hs.window to action on.
+function MenuBarApps:_actionMenuItem(menuBar, config, app, appWindow)
+    -- move mode - This moves the application under the menu bar item so that it
+    -- appears like a menu
+    if config.action == actions.move then
+        -- Get rect representing the frame of the app window
+        appWindowFrame = appWindow:frame()
+        -- Get rect representing the frame of the menubar item
+        appMenuBarFrame = menuBar:frame()
+
+        -- move() only moves in absolute coordinates if a rect is provided, so we
+        -- just update the appWindowFrame rect's x coordinate to be such that it is
+        -- under the menubar item, aligned to the right.
+        appWindowFrame.x = appMenuBarFrame.x -
+                               (appWindowFrame.w - appMenuBarFrame.w)
+        -- Do a similar transformation for y
+        appWindowFrame.y = appMenuBarFrame.y + appMenuBarFrame.h
+
+        -- Move the window to the desired location
+        appWindow:move(appWindowFrame)
+        -- maximize mode - This just maxmizes the app if it isn't already
+    elseif config.action == actions.maximize then
+        if appWindow:isMaximizable() then appWindow:maximize() end
+    else
+        self.logger.ef("Unknown action %s", config.action)
+    end
+
+    app:activate()
+end
+
+-- Retrieve and move a window from an app to the currently focused space.
+-- Invoked after opening the app, this retrieves the cached window for this app
+-- and moves it to the currently focused space.
+-- Inputs are the hs.menubar, app config, currently focused space ID, the
+-- hs.application to action on.
+function MenuBarApps:_getAndMoveOpenedAppWindow(menuBar, config,
+                                                currentlyFocusedSpace, app)
+    appWindow = WindowCache:findWindowByApp(config.app)
     if not appWindow then
-        self.logger.ef("%s is not open or hidden", appName)
+        self.logger.ef("No window for app %s open, cannot continue", config.app)
         return
     end
 
-    -- Get app's application
-    app = appWindow:application()
+    self:_moveOpenedAppWindow(menuBar, config, currentlyFocusedSpace, app,
+                              appWindow)
+end
 
-    -- If this window is not the frontmost window, then we need to act on it
-    if hs.window.frontmostWindow():id() ~= appWindow:id() then
-        -- Move the window to the currently focused space.
-        hs.spaces.moveWindowToSpace(appWindow, hs.spaces.focusedSpace())
+-- Move an existing opened app window to the currently focused space.
+-- Invoked directly from the menu bar handler, this will move the retrieved window
+-- for this app to the currently focused space.
+-- Inputs are the hs.menubar, app config, currently focused space ID, the
+-- hs.application to action on, and the hs.window to action on.
+function MenuBarApps:_moveOpenedAppWindow(menuBar, config,
+                                          currentlyFocusedSpace, app, appWindow)
+    -- Move the window to the currently focused space.
+    hs.spaces.moveWindowToSpace(appWindow, currentlyFocusedSpace)
 
-        -- move mode - This moves the application under the menu bar item so that it
-        -- appears like a menu
-        if config.action == actions.move then
-            -- Get rect representing the frame of the app window
-            appWindowFrame = appWindow:frame()
-            -- Get rect representing the frame of the menubar item
-            appMenuBarFrame = menuBar:frame()
+    self:_actionMenuItem(menuBar, config, app, appWindow)
+end
 
-            -- move() only moves in absolute coordinates if a rect is provided, so we
-            -- just update the appWindowFrame rect's x coordinate to be such that it is
-            -- under the menubar item, aligned to the right.
-            appWindowFrame.x = appMenuBarFrame.x -
-                                   (appWindowFrame.w - appMenuBarFrame.w)
-            -- Do a similar transformation for y
-            appWindowFrame.y = appMenuBarFrame.y + appMenuBarFrame.h
+-- Handler for a menu bar click.
+-- Inputs are the hs.menubar clicked and the configured appName and config.
+function MenuBarApps:_menuBarClicked(menuBar, appName, config)
+    -- Store the focused space from before we start the action flow. This helps
+    -- when apps try to force themselves to open in another space which will change
+    -- the focused space during app open.
+    currentlyFocusedSpace = hs.spaces.focusedSpace()
 
-            -- Move the window to the desired location
-            appWindow:move(appWindowFrame)
-            -- maximize mode - This just maxmizes the app if it isn't already
-        elseif config.action == actions.maximize then
-            if appWindow:isMaximizable() then appWindow:maximize() end
+    -- Get app hs.window
+    self.logger.vf("Finding open window for app %s", appName)
+    appWindow = WindowCache:findWindowByApp(appName)
+    -- If we could not find a cached window for the app of this menu bar.
+    if not appWindow then
+        if config.disableOpen then
+            -- Open is disabled and no window, cannot continue.
+            self.logger.wf(
+                "%s is not open or hidden and open disabled, cannot continue",
+                appName)
+            return
         else
-            self.logger.ef("Unknown action %s", config.action)
-        end
+            -- Attempt to open app by name.
+            self.logger.vf("Opening application %s", appName)
+            app = hs.application.open(appName)
+            if not app then
+                -- No application with this name exists, cannot continue.
+                self.logger.ef("No application named %s could be opened",
+                               appName)
+                return
+            end
 
-        app:activate()
+            -- Indicate the app was opened during this run.
+            appOpened = true
+        end
     else
+        -- If we can, get the window app's application
+        app = appWindow:application()
+        appOpened = false
+    end
+
+    if appOpened then
+        -- If this is a "fresh" open, we instead tell WindowCache to only continue
+        -- the action flow once it can find a window from the app in it.
+        self.menuBarOpenTimer = WindowCache:waitForWindowByApp(appName,
+                                                               self:_instanceCallback(
+                                                                   self._getAndMoveOpenedAppWindow,
+                                                                   menuBar,
+                                                                   config,
+                                                                   currentlyFocusedSpace,
+                                                                   app))
+    elseif hs.window.frontmostWindow():id() ~= appWindow:id() then
+        -- If this window already exists but is not the frontmost window, then we
+        -- need to act on it, and move the window to the currently focused space.
+        self:_moveOpenedAppWindow(menuBar, config, currentlyFocusedSpace, app,
+                                  appWindow)
+    else
+        -- Otherwise just hide the app if it existed and was at the front.
         app:hide()
     end
 end
@@ -211,6 +291,8 @@ function MenuBarApps:stop()
     self.logger.v("Stopping MenuBarApps")
 
     for i, menuBar in ipairs(self.menuBars) do menuBar:delete() end
+
+    if self.menuBarOpenTimer then self.menuBarOpenTimer:stop() end
 end
 
 return MenuBarApps
