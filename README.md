@@ -9,19 +9,19 @@ The application will be automatically moved to the focused space in Mission Cont
 
 You can also use this to create menus and sub-menus of applications as well.
 
-# Known Issues
-
-* In "move" mode it does not end up exactly under the Menu Bar item, particularly when there are several defined
-
 # Installation
 
-This Spoon depends on another Spoon being installed and loaded, [WindowCache](https://github.com/adammillerio/WindowCache.spoon).
+This Spoon depends on two other Spoons being installed, loaded, and configured:
+* [EnsureApp](https://github.com/adammillerio/EnsureApp.spoon).
+    * Example app configurations provided below
+* [WindowCache](https://github.com/adammillerio/WindowCache.spoon)
+    * No configuration needed other than start
 
 ## Automated
 
 MenuBarApps can be automatically installed from my [Spoon Repository](https://github.com/adammillerio/Spoons) via [SpoonInstall](https://www.hammerspoon.org/Spoons/SpoonInstall.html). See the repository README or the SpoonInstall docs for more information.
 
-Example `init.lua` configuration which configures `SpoonInstall` and uses it to install and start WindowCache and MenuBarApps:
+Example `init.lua` configuration which configures `SpoonInstall` and uses it to install and start EnsureApp and MenuBarApps:
 
 ```lua
 hs.loadSpoon("SpoonInstall")
@@ -34,12 +34,16 @@ spoon.SpoonInstall.repos.adammillerio = {
 
 spoon.SpoonInstall:andUse("WindowCache", {repo = "adammillerio", start = true})
 
-spoon.SpoonInstall:andUse("MenuBarApps", {
+spoon.SpoonInstall:andUse("EnsureApp", {
+    repo = "adammillerio",
+    start = true,
     config = {
         apps = {
-            {title = "P", app = "Plexamp", action = "move"},
-            {title = "D", app = "Discord", action = "maximize"}, {
-                title = "A",
+            ["Plexamp"] = {app = "Plexamp", action = "move"},
+            ["Discord"] = {app = "Discord", action = "maximize"},
+            ["Reminders"] = {app = "Reminders", action = "maximize"},
+            ["Settings"] = {app = "Settings", action = "move"},
+            ["Arc"] = {
                 app = "Arc",
                 action = "maximize",
                 spacePrecedence = true,
@@ -47,27 +51,31 @@ spoon.SpoonInstall:andUse("MenuBarApps", {
                     menuSection = "File",
                     menuItem = "New Window"
                 }
-            }, {
+            }
+        }
+    }
+})
+
+spoon.SpoonInstall:andUse("MenuBarApps", {
+    repo = "adammillerio",
+    start = true
+    config = {
+        apps = {
+            {title = "P", app = "Plexamp"},
+            {title = "D", app = "Discord"},
+            {title = "A", app = "Arc"}, {
                 title = "M",
-                action = "menu",
                 menu = {
-                    {title = "KeePassXC", app = "KeePassXC", action = "move"},
-                    {title = "Reminders", app = "Reminders", action = "move"}, {
+                    {title = "KeePassXC", app = "KeePassXC"},
+                    {title = "Reminders", app = "Reminders"},
+                    {
                         title = "Misc",
-                        action = "menu",
-                        menu = {
-                            {
-                                title = "Settings",
-                                app = "Settings",
-                                action = "move"
-                            }
-                        }
+                        menu = {{title = "Settings", app = "Settings"}}
                     }
                 }
             }
         }
     },
-    start = true
 })
 ```
 
@@ -84,9 +92,11 @@ These can then be moved around like any other menu bar items.
 
 Download the latest WindowCache release from [here.](https://github.com/adammillerio/Spoons/raw/main/Spoons/MenuBarApps.spoon.zip)
 
+Download the latest EnsureApp release from [here.](https://github.com/adammillerio/Spoons/raw/main/Spoons/EnsureApp.spoon.zip)
+
 Download the latest MenuBarApps release from [here.](https://github.com/adammillerio/Spoons/raw/main/Spoons/MenuBarApps.spoon.zip)
 
-Unzip both and either double click to load the Spoons or place the contents manually in `~/.hammerspoon/Spoons`
+Unzip them all and either double click to load the Spoons or place the contents manually in `~/.hammerspoon/Spoons`
 
 Then load the Spoons in `~/.hammerspoon/init.lua`:
 
@@ -95,14 +105,16 @@ hs.loadSpoon("WindowCache")
 
 hs.spoons.use("WindowCache", {start = true})
 
-hs.loadSpoon("MenuBarApps")
+hs.loadSpoon("EnsureApp")
 
-hs.spoons.use("MenuBarApps", {
+hs.spoons.use("EnsureApp", {
     config = {
         apps = {
-            {title = "P", app = "Plexamp", action = "move"},
-            {title = "D", app = "Discord", action = "maximize"}, {
-                title = "A",
+            ["Plexamp"] = {app = "Plexamp", action = "move"},
+            ["Discord"] = {app = "Discord", action = "maximize"},
+            ["Reminders"] = {app = "Reminders", action = "maximize"},
+            ["Settings"] = {app = "Settings", action = "move"},
+            ["Arc"] = {
                 app = "Arc",
                 action = "maximize",
                 spacePrecedence = true,
@@ -110,27 +122,32 @@ hs.spoons.use("MenuBarApps", {
                     menuSection = "File",
                     menuItem = "New Window"
                 }
-            }, {
+            }
+        }
+    },
+    start = true
+})
+
+hs.loadSpoon("MenuBarApps")
+
+hs.spoons.use("MenuBarApps", {
+    config = {
+        apps = {
+            {title = "P", app = "Plexamp"},
+            {title = "D", app = "Discord"},
+            {title = "A", app = "Arc"}, {
                 title = "M",
-                action = "menu",
                 menu = {
-                    {title = "KeePassXC", app = "KeePassXC", action = "move"},
-                    {title = "Reminders", app = "Reminders", action = "move"}, {
+                    {title = "KeePassXC", app = "KeePassXC"},
+                    {title = "Reminders", app = "Reminders"},
+                    {
                         title = "Misc",
-                        action = "menu",
-                        menu = {
-                            {
-                                title = "Settings",
-                                app = "Settings",
-                                action = "move"
-                            }
-                        }
+                        menu = {{title = "Settings", app = "Settings"}}
                     }
                 }
             }
-        },
-        start = true
-    }
+        }
+    },
+    start = true
 })
 ```
-
