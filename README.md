@@ -61,8 +61,13 @@ spoon.SpoonInstall:andUse("MenuBarApps", {
     start = true
     config = {
         apps = {
-            {title = "P", app = "Plexamp"},
             {title = "D", app = "Discord"},
+            {
+                choice = {
+                    {title = "P", app = "Plexamp"},
+                    {title = "S", app = "Spotify"}
+                }
+            },
             {title = "A", app = "Arc"}, {
                 title = "M",
                 menu = {
@@ -81,8 +86,10 @@ spoon.SpoonInstall:andUse("MenuBarApps", {
 
 This will create three menu bar items:
 
-* Menu Bar with icon "P" which opens the "Plexamp" application and moves it to be under the Menu Bar in the current Space
 * Menu Bar with icon "D" which opens the "Discord" application and maximizes it in the current Space
+* Menu Bar with icon "P" which opens the "Plexamp" application and moves it to be under the Menu Bar in the current Space
+    * If Alt key is pressed when selecting this menu item, it will change to S and open Spotify
+    * Alt key will continue to cycle through choices while pressed
 * Menu Bar with icon "A" which opens a Space-specific instance of the "Arc" application in the current space, using the provided newWindowConfig to identify an application menu selection
 * Menu Bar with icon "M" which opens menu with "KeePassXC", "Reminders", and a "Misc" sub-menu with "Settings".
 
@@ -133,8 +140,13 @@ hs.loadSpoon("MenuBarApps")
 hs.spoons.use("MenuBarApps", {
     config = {
         apps = {
-            {title = "P", app = "Plexamp"},
             {title = "D", app = "Discord"},
+            {
+                choice = {
+                    {title = "P", app = "Plexamp"},
+                    {title = "S", app = "Spotify"}
+                }
+            },
             {title = "A", app = "Arc"}, {
                 title = "M",
                 menu = {
