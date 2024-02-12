@@ -11,7 +11,7 @@
     ],
     "Variable" : [
       {
-        "def" : "MenuBarApps.apps",
+        "doc" : "Table containing each application's name and it's desired configuration. The\nkey of each entry is the name of the App as it appears in the title bar, and\nthe value is a configuration table with the following entries:\n    * title - String with title text to display in the menu bar icon itself\n    * app - Name of the application in EnsureApp config. \n    * action - String with action to take on window when showing. See constants.",
         "stripped_doc" : [
           "Table containing each application's name and it's desired configuration. The",
           "key of each entry is the name of the App as it appears in the title bar, and",
@@ -20,8 +20,10 @@
           "    * app - Name of the application in EnsureApp config. ",
           "    * action - String with action to take on window when showing. See constants."
         ],
-        "name" : "apps",
-        "doc" : "Table containing each application's name and it's desired configuration. The\nkey of each entry is the name of the App as it appears in the title bar, and\nthe value is a configuration table with the following entries:\n    * title - String with title text to display in the menu bar icon itself\n    * app - Name of the application in EnsureApp config. \n    * action - String with action to take on window when showing. See constants.",
+        "parameters" : [
+
+        ],
+        "desc" : "Table containing each application's name and it's desired configuration. The",
         "notes" : [
 
         ],
@@ -30,19 +32,19 @@
         "returns" : [
 
         ],
-        "desc" : "Table containing each application's name and it's desired configuration. The",
-        "parameters" : [
-
-        ]
+        "name" : "apps",
+        "def" : "MenuBarApps.apps"
       },
       {
-        "def" : "MenuBarApps.logger",
+        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log \nlevel for the messages coming from the Spoon.",
         "stripped_doc" : [
           "Logger object used within the Spoon. Can be accessed to set the default log ",
           "level for the messages coming from the Spoon."
         ],
-        "name" : "logger",
-        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log \nlevel for the messages coming from the Spoon.",
+        "parameters" : [
+
+        ],
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log",
         "notes" : [
 
         ],
@@ -51,18 +53,18 @@
         "returns" : [
 
         ],
-        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log",
-        "parameters" : [
-
-        ]
+        "name" : "logger",
+        "def" : "MenuBarApps.logger"
       },
       {
-        "def" : "MenuBarApps.logLevel",
+        "doc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
         "stripped_doc" : [
           "MenuBarApps specific log level override, see hs.logger.setLogLevel for options."
         ],
-        "name" : "logLevel",
-        "doc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
+        "parameters" : [
+
+        ],
+        "desc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
         "notes" : [
 
         ],
@@ -71,18 +73,18 @@
         "returns" : [
 
         ],
-        "desc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
-        "parameters" : [
-
-        ]
+        "name" : "logLevel",
+        "def" : "MenuBarApps.logLevel"
       },
       {
-        "def" : "MenuBarApps.menuBars",
+        "doc" : "Table containing references to all of the created menu bars.",
         "stripped_doc" : [
           "Table containing references to all of the created menu bars."
         ],
-        "name" : "menuBars",
-        "doc" : "Table containing references to all of the created menu bars.",
+        "parameters" : [
+
+        ],
+        "desc" : "Table containing references to all of the created menu bars.",
         "notes" : [
 
         ],
@@ -91,119 +93,34 @@
         "returns" : [
 
         ],
-        "desc" : "Table containing references to all of the created menu bars.",
-        "parameters" : [
-
-        ]
+        "name" : "menuBars",
+        "def" : "MenuBarApps.menuBars"
       }
     ],
     "stripped_doc" : [
 
     ],
-    "type" : "Module",
     "Deprecated" : [
 
     ],
     "desc" : "Control applications from the macOS Menu Bar",
+    "type" : "Module",
     "Constructor" : [
 
     ],
     "doc" : "Control applications from the macOS Menu Bar \n\nDownload: https:\/\/github.com\/adammillerio\/Spoons\/raw\/main\/Spoons\/MenuBarApps.spoon.zip\n\nREADME with Example Usage: [README.md](https:\/\/github.com\/adammillerio\/MenuBarApps.spoon\/blob\/main\/README.md)",
-    "items" : [
+    "Method" : [
       {
-        "def" : "MenuBarApps.apps",
-        "stripped_doc" : [
-          "Table containing each application's name and it's desired configuration. The",
-          "key of each entry is the name of the App as it appears in the title bar, and",
-          "the value is a configuration table with the following entries:",
-          "    * title - String with title text to display in the menu bar icon itself",
-          "    * app - Name of the application in EnsureApp config. ",
-          "    * action - String with action to take on window when showing. See constants."
-        ],
-        "name" : "apps",
-        "doc" : "Table containing each application's name and it's desired configuration. The\nkey of each entry is the name of the App as it appears in the title bar, and\nthe value is a configuration table with the following entries:\n    * title - String with title text to display in the menu bar icon itself\n    * app - Name of the application in EnsureApp config. \n    * action - String with action to take on window when showing. See constants.",
-        "notes" : [
-
-        ],
-        "signature" : "MenuBarApps.apps",
-        "type" : "Variable",
-        "returns" : [
-
-        ],
-        "desc" : "Table containing each application's name and it's desired configuration. The",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "def" : "MenuBarApps.logLevel",
-        "stripped_doc" : [
-          "MenuBarApps specific log level override, see hs.logger.setLogLevel for options."
-        ],
-        "name" : "logLevel",
-        "doc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
-        "notes" : [
-
-        ],
-        "signature" : "MenuBarApps.logLevel",
-        "type" : "Variable",
-        "returns" : [
-
-        ],
-        "desc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "def" : "MenuBarApps.logger",
-        "stripped_doc" : [
-          "Logger object used within the Spoon. Can be accessed to set the default log ",
-          "level for the messages coming from the Spoon."
-        ],
-        "name" : "logger",
-        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log \nlevel for the messages coming from the Spoon.",
-        "notes" : [
-
-        ],
-        "signature" : "MenuBarApps.logger",
-        "type" : "Variable",
-        "returns" : [
-
-        ],
-        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "def" : "MenuBarApps.menuBars",
-        "stripped_doc" : [
-          "Table containing references to all of the created menu bars."
-        ],
-        "name" : "menuBars",
-        "doc" : "Table containing references to all of the created menu bars.",
-        "notes" : [
-
-        ],
-        "signature" : "MenuBarApps.menuBars",
-        "type" : "Variable",
-        "returns" : [
-
-        ],
-        "desc" : "Table containing references to all of the created menu bars.",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "def" : "MenuBarApps:init()",
+        "doc" : "Spoon initializer method for MenuBarApps.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon initializer method for MenuBarApps.",
           ""
         ],
-        "name" : "init",
-        "doc" : "Spoon initializer method for MenuBarApps.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon initializer method for MenuBarApps.",
         "notes" : [
 
         ],
@@ -212,20 +129,20 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon initializer method for MenuBarApps.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "init",
+        "def" : "MenuBarApps:init()"
       },
       {
-        "def" : "MenuBarApps:start()",
+        "doc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon start method for MenuBarApps. Creates all configured menu bars.",
           ""
         ],
-        "name" : "start",
-        "doc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.",
         "notes" : [
 
         ],
@@ -234,20 +151,20 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "start",
+        "def" : "MenuBarApps:start()"
       },
       {
-        "def" : "MenuBarApps:stop()",
+        "doc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
           ""
         ],
-        "name" : "stop",
-        "doc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
         "notes" : [
 
         ],
@@ -256,11 +173,8 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "stop",
+        "def" : "MenuBarApps:stop()"
       }
     ],
     "Command" : [
@@ -269,15 +183,104 @@
     "Field" : [
 
     ],
-    "Method" : [
+    "items" : [
       {
-        "def" : "MenuBarApps:init()",
+        "doc" : "Table containing each application's name and it's desired configuration. The\nkey of each entry is the name of the App as it appears in the title bar, and\nthe value is a configuration table with the following entries:\n    * title - String with title text to display in the menu bar icon itself\n    * app - Name of the application in EnsureApp config. \n    * action - String with action to take on window when showing. See constants.",
+        "stripped_doc" : [
+          "Table containing each application's name and it's desired configuration. The",
+          "key of each entry is the name of the App as it appears in the title bar, and",
+          "the value is a configuration table with the following entries:",
+          "    * title - String with title text to display in the menu bar icon itself",
+          "    * app - Name of the application in EnsureApp config. ",
+          "    * action - String with action to take on window when showing. See constants."
+        ],
+        "parameters" : [
+
+        ],
+        "desc" : "Table containing each application's name and it's desired configuration. The",
+        "notes" : [
+
+        ],
+        "signature" : "MenuBarApps.apps",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "apps",
+        "def" : "MenuBarApps.apps"
+      },
+      {
+        "doc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
+        "stripped_doc" : [
+          "MenuBarApps specific log level override, see hs.logger.setLogLevel for options."
+        ],
+        "parameters" : [
+
+        ],
+        "desc" : "MenuBarApps specific log level override, see hs.logger.setLogLevel for options.",
+        "notes" : [
+
+        ],
+        "signature" : "MenuBarApps.logLevel",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "logLevel",
+        "def" : "MenuBarApps.logLevel"
+      },
+      {
+        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log \nlevel for the messages coming from the Spoon.",
+        "stripped_doc" : [
+          "Logger object used within the Spoon. Can be accessed to set the default log ",
+          "level for the messages coming from the Spoon."
+        ],
+        "parameters" : [
+
+        ],
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log",
+        "notes" : [
+
+        ],
+        "signature" : "MenuBarApps.logger",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "logger",
+        "def" : "MenuBarApps.logger"
+      },
+      {
+        "doc" : "Table containing references to all of the created menu bars.",
+        "stripped_doc" : [
+          "Table containing references to all of the created menu bars."
+        ],
+        "parameters" : [
+
+        ],
+        "desc" : "Table containing references to all of the created menu bars.",
+        "notes" : [
+
+        ],
+        "signature" : "MenuBarApps.menuBars",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "menuBars",
+        "def" : "MenuBarApps.menuBars"
+      },
+      {
+        "doc" : "Spoon initializer method for MenuBarApps.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon initializer method for MenuBarApps.",
           ""
         ],
-        "name" : "init",
-        "doc" : "Spoon initializer method for MenuBarApps.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon initializer method for MenuBarApps.",
         "notes" : [
 
         ],
@@ -286,20 +289,20 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon initializer method for MenuBarApps.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "init",
+        "def" : "MenuBarApps:init()"
       },
       {
-        "def" : "MenuBarApps:start()",
+        "doc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon start method for MenuBarApps. Creates all configured menu bars.",
           ""
         ],
-        "name" : "start",
-        "doc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.",
         "notes" : [
 
         ],
@@ -308,20 +311,20 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon start method for MenuBarApps. Creates all configured menu bars.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "start",
+        "def" : "MenuBarApps:start()"
       },
       {
-        "def" : "MenuBarApps:stop()",
+        "doc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
         "stripped_doc" : [
           "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
           ""
         ],
-        "name" : "stop",
-        "doc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "parameters" : [
+          " * None",
+          ""
+        ],
+        "desc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
         "notes" : [
 
         ],
@@ -330,11 +333,8 @@
         "returns" : [
           " * None"
         ],
-        "desc" : "Spoon stop method for MenuBarApps. Deletes all configured menu bars.",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "stop",
+        "def" : "MenuBarApps:stop()"
       }
     ],
     "name" : "MenuBarApps"

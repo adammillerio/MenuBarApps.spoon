@@ -100,7 +100,7 @@ function MenuBarApps:_createMenuBar(config)
 
     local menuBar = hs.menubar.new()
 
-    local actionConfig = {moveFrame = menuBar:frame()}
+    local actionConfig = {moveMenuBar = menuBar}
 
     if not config.menu then
         self.logger.vf("(%s) Not Menu: Setting item click callback",
