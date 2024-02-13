@@ -121,6 +121,7 @@ function MenuBarApps:_createMenuBar(config)
 
     -- Create the new menubar item.
     local menuBar = hs.menubar.new()
+    menuBar:autosaveName(string.format("MenuBarApps%s", config.title))
 
     -- Store the menuBar in the actionConfig, to be used with any apps which
     -- have their EnsureApp configuration set to "move" in order to relocate the
