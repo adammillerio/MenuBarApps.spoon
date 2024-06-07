@@ -11,7 +11,7 @@ MenuBarApps.__index = MenuBarApps
 
 -- Metadata
 MenuBarApps.name = "MenuBarApps"
-MenuBarApps.version = "0.0.4"
+MenuBarApps.version = "0.0.5"
 MenuBarApps.author = "Adam Miller <adam@adammiller.io>"
 MenuBarApps.homepage = "https://github.com/adammillerio/MenuBarApps.spoon"
 MenuBarApps.license = "MIT - https://opensource.org/licenses/MIT"
