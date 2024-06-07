@@ -11,7 +11,7 @@ MenuBarApps.__index = MenuBarApps
 
 -- Metadata
 MenuBarApps.name = "MenuBarApps"
-MenuBarApps.version = "0.0.4"
+MenuBarApps.version = "0.0.5"
 MenuBarApps.author = "Adam Miller <adam@adammiller.io>"
 MenuBarApps.homepage = "https://github.com/adammillerio/MenuBarApps.spoon"
 MenuBarApps.license = "MIT - https://opensource.org/licenses/MIT"
@@ -127,6 +127,8 @@ function MenuBarApps:_createMenuBar(config)
     -- have their EnsureApp configuration set to "move" in order to relocate the
     -- window under the menubar.
     local actionConfig = {moveMenuBar = menuBar}
+    -- Enable toggling of window if it is already in the foreground.
+    actionConfig.toggle = true
 
     if config.menu then
         -- Generate the menu that will become the menu bar's main menu.
