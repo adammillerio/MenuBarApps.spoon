@@ -127,6 +127,8 @@ function MenuBarApps:_createMenuBar(config)
     -- have their EnsureApp configuration set to "move" in order to relocate the
     -- window under the menubar.
     local actionConfig = {moveMenuBar = menuBar}
+    -- Enable toggling of window if it is already in the foreground.
+    actionConfig.toggle = true
 
     if config.menu then
         -- Generate the menu that will become the menu bar's main menu.
